@@ -1,25 +1,25 @@
-import React, {useEffect} from 'react'
-import NewAnecdote from './components/AnecdoteForm'
-import AnecdoteList from './components/AnecdoteList'
-import Notification from './components/Notification'
-import Filter from './components/Filter'
-import { initializeAnecdotes } from './reducers/anecdoteReducer'
-import { useDispatch } from 'react-redux'
+import React, { useState } from 'react'
+import { useField, useCountry } from './hooks'
+import Country from './components/Country'
 
 const App = () => {
-  const dispatch = useDispatch()
-  useEffect(() => {
-    dispatch(initializeAnecdotes())
-  }, [dispatch])
+  const nameInput = useField('text')
+  const [name, setName] = useState('')
+  const country = useCountry(name)
+
+  const fetch = (event) => {
+    event.preventDefault()
+    setName(nameInput.value)
+  }
 
   return (
     <div>
-      <h2>create new</h2>
-      <NewAnecdote />
-      <h2>Anecdotes</h2>
-      <Notification />
-      <Filter />
-      <AnecdoteList />
+      <form onSubmit={fetch}>
+        <input {...nameInput} />
+        <button>find</button>
+      </form>
+
+      <Country country={country} />
     </div>
   )
 }
