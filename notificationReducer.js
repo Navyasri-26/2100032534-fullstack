@@ -1,25 +1,32 @@
 const notificationReducer = (state = null, action) => {
-    switch (action.type) {
-      case 'NEW_NOTIFICATION':
-        return action.notification
-      case 'HIDE_NOTIFICATION':
-        return action.notification
-      default:
-        return state
-    }
+  switch (action.type) {
+    case 'NEW_NOTIFICATION':
+      return action.data
+    case 'HIDE_NOTIFICATION':
+      return action.data
+    default:
+      return state
   }
+}
 
-export const setNotification = (notification, displayTime) => {
-  return async dispatch => {
+export const setNotification = (
+  notification,
+  notificationType,
+  displayTime
+) => {
+  return async (dispatch) => {
     dispatch({
       type: 'NEW_NOTIFICATION',
-      notification,
+      data: {
+        message: notification,
+        type: notificationType
+      }
     })
 
     setTimeout(() => {
       dispatch({
         type: 'HIDE_NOTIFICATION',
-        notification: null
+        data: null
       })
     }, displayTime * 1000)
   }

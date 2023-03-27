@@ -1,55 +1,61 @@
-import React, { useState } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react'
+import { useDispatch } from 'react-redux'
+import { createBlog } from '../reducers/blogReducer'
+import { setNotification } from '../reducers/notificationReducer'
+import { Form, Button } from 'react-bootstrap'
 
-const BlogForm = ({ createBlog }) => {
-  const [newTitle, setNewTitle ] = useState('')
-  const [newAuthor, setNewAuthor ] = useState('')
-  const [newUrl, setNewUrl ] = useState('')
+const BlogForm = () => {
+  const dispatch = useDispatch()
 
-  const handleTitleChange = (event) => {
-    setNewTitle(event.target.value)
-  }
-
-  const handleAuthorChange = (event) => {
-    setNewAuthor(event.target.value)
-  }
-
-  const handleUrlChange = (event) => {
-    setNewUrl(event.target.value)
-  }
-
-  const addBlog = (event) => {
+  const createNewBlog = async (event) => {
     event.preventDefault()
-    createBlog({
-      title: newTitle,
-      author: newAuthor,
-      url: newUrl
-    })
-    setNewTitle('')
-    setNewAuthor('')
-    setNewUrl('')
+    const title = event.target.title.value
+    const author = event.target.author.value
+    const url = event.target.url.value
+
+    event.target.title.value = ''
+    event.target.author.value = ''
+    event.target.url.value = ''
+
+    const blogToCreate = {
+      title: title,
+      author: author,
+      url: url
+    }
+
+    dispatch(createBlog(blogToCreate))
+    dispatch(
+      setNotification(`Blog ${title} successfully created`, 'success', 5)
+    )
   }
 
   return (
-    <form onSubmit={addBlog}>
-      <div>
-        Title: <input id='title' value={newTitle} onChange={handleTitleChange} />
-      </div>
-      <div>
-        Author: <input id='author' value={newAuthor} onChange={handleAuthorChange} />
-      </div>
-      <div>
-        Url: <input id='url' value={newUrl} onChange={handleUrlChange} />
-      </div>
-      <div>
-        <button type="submit">add</button>
-      </div>
-    </form>
+    <Form onSubmit={createNewBlog}>
+      <Form.Group>
+        <Form.Label>Title:</Form.Label>
+        <Form.Control
+          type="text"
+          name="title"
+          id="title"
+        />
+        <Form.Label>Author:</Form.Label>
+        <Form.Control
+          type="text"
+          name="author"
+          id="author"
+        />
+        <Form.Label>Url:</Form.Label>
+        <Form.Control
+          type="text"
+          name="url"
+          id="url"
+        />
+        <Button variant="primary" type="submit">
+          add
+        </Button>
+      </Form.Group>
+    </Form>
   )
-}
-
-BlogForm.propTypes = {
-  createBlog: PropTypes.func.isRequired
 }
 
 export default BlogForm
