@@ -1,45 +1,50 @@
-import React from 'react'
-import { useDispatch } from 'react-redux'
-import { useHistory } from 'react-router-dom'
-import { login } from '../reducers/authReducer'
-import { initializeBlogs } from '../reducers/blogReducer'
-import { Form, Button } from 'react-bootstrap'
+import React, { useState, useEffect } from 'react'
+import { useMutation } from '@apollo/client'
+import { LOGIN } from '../queries'
 
-const LoginForm = () => {
-  const dispatch = useDispatch()
-  const history = useHistory()
+const LoginForm = ({ setError, setToken }) => {
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
 
-  const handleLogin = async (event) => {
+  const [ login, result ] = useMutation(LOGIN, {    
+      onError: (error) => {
+        setError(error.graphQLErrors[0].message)
+    }
+  })
+
+  useEffect(() => {    
+      if ( result.data ) {      
+          const token = result.data.login.value      
+          setToken(token)      
+          localStorage.setItem('library-user-token', token)    
+        }  
+    }, [result.data]) // eslint-disable-line
+    
+  const submit = async (event) => {
     event.preventDefault()
-    const username = event.target.username.value
-    const password = event.target.password.value
-    event.target.username.value = ''
-    event.target.password.value = ''
-    dispatch(login(username, password))
-    dispatch(initializeBlogs())
-    history.push('/blogs')
+    
+    login({ variables: { username, password } })
   }
 
   return (
-    <Form onSubmit={handleLogin}>
-        <Form.Group>
-          <Form.Label>username:</Form.Label>
-          <Form.Control
-            type="text"
-            name="username"
-            id="username"
+    <div>
+      <form onSubmit={submit}>
+        <div>
+          username <input
+            value={username}
+            onChange={({ target }) => setUsername(target.value)}
           />
-          <Form.Label>password:</Form.Label>
-          <Form.Control
-            type="password"
-            id="password"
-            name="password"
+        </div>
+        <div>
+          password <input
+            type='password'
+            value={password}
+            onChange={({ target }) => setPassword(target.value)}
           />
-          <Button variant="primary" type="submit">
-            login
-          </Button>
-        </Form.Group>
-      </Form>
+        </div>
+        <button type='submit'>login</button>
+      </form>
+    </div>
   )
 }
 
