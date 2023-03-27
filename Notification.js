@@ -1,47 +1,24 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+import { useSelector } from 'react-redux'
 
-const error = {
-  color: 'red',
-  background: 'lightgrey',
-  font_size: 20,
-  border_style: 'solid',
-  border_radius: 5,
-  padding: 10,
-  margin_bottom: 10
-}
+const Notification = () => {
+  const notification = useSelector(state => state.notification)
 
-const success = {
-  color: 'green',
-  background: 'lightgrey',
-  font_size: 20,
-  border_style: 'solid',
-  border_radius: 5,
-  padding: 10,
-  margin_bottom: 10
-}
-
-const Notification = ({ errorMessage, successMessage }) => {
-  if (successMessage === null && errorMessage === null) {
-    return null
-  } else if (successMessage){
-    return (
-      <div id='success' style={success}>
-        {successMessage}
-      </div>
-    )
-  } else {
-    return (
-      <div id='error' style={error}>
-        {errorMessage}
-      </div>
-    )
+  const style = {
+    border: 'solid',
+    padding: 10,
+    borderWidth: 1
   }
-}
 
-Notification.propTypes = {
-  errorMessage: PropTypes.string,
-  successMessage: PropTypes.string
+  if (notification === null) {
+    return null
+  }
+
+  return (
+    <div style={style}>
+      {notification}
+    </div>
+  )
 }
 
 export default Notification
