@@ -1,83 +1,35 @@
-import React, { useState } from 'react'
-import { useApolloClient } from '@apollo/client'
-
-import Authors from './components/Authors'
-import Books from './components/Books'
-import BookForm from './components/BookForm'
-import LoginForm from './components/LoginForm'
-import Recommended from './components/Recommended'
-
-const Notify = ({errorMessage}) => {  
-  if ( !errorMessage ) {    
-    return null  
-  }  
-  return (    
-    <div style={{color: 'red'}}>    
-    {errorMessage}    
-    </div>  
-    )
- }
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+import Content from './components/Content'
+import Filter from './components/Filter'
 
 const App = () => {
-  const [token, setToken] = useState(null)
-  const [page, setPage] = useState('authors')
-  const [errorMessage, setErrorMessage] = useState(null)
-  const client = useApolloClient()
+  const [countries, setCountries] = useState([])
+  const [allCountries, setAllCountries] = useState([])
+  const [newFilter, setNewFilter] = useState('')
 
-  const notify = (message) => {    
-    setErrorMessage(message)    
-    setTimeout(() => {      
-      setErrorMessage(null)    
-    }, 10000)  
-  }
+  useEffect(() => {
+    axios
+      .get('https://restcountries.eu/rest/v2/all')
+      .then(response => {
+        console.log('promise fulfilled')
+        setAllCountries(response.data)
+      })
+  }, [])
 
-  const logout = () => {    
-    setToken(null)    
-    localStorage.clear()    
-    client.resetStore()  
-  }
-
-  if (!token) {
-    return (
-      <div>
-        <Notify errorMessage={errorMessage} />
-        <h2>Login</h2>
-        <LoginForm
-          setToken={setToken}
-          setError={notify}
-        />
-      </div>
-    )
+  const handleFilterChange = (event) => {
+    setNewFilter(event.target.value)
+    if (newFilter) {
+      const regex = new RegExp( newFilter, 'i' );
+      const filteredCountries = () => allCountries.filter(country => country.name.match(regex))
+      setCountries(filteredCountries)
+    }
   }
 
   return (
     <div>
-      <div>
-      <button onClick={logout}>logout</button>
-        <button onClick={() => setPage('authors')}>authors</button>
-        <button onClick={() => setPage('books')}>books</button>
-        <button onClick={() => setPage('recommended')}>recommended</button>
-        <button onClick={() => setPage('add')}>add book</button>
-      </div>
-
-      <Notify errorMessage={errorMessage} />
-
-      <Authors
-        show={page === 'authors'} notify={notify}
-      />
-
-      <Books
-        show={page === 'books'}
-      />
-
-      <Recommended
-        show={page === 'recommended'} notify={notify}
-      />
-
-      <BookForm
-        show={page === 'add'} notify={notify}
-      />
-
+      <Filter value={newFilter} onChange={handleFilterChange} />
+      <Content countries={countries} setCountries={setCountries} />
     </div>
   )
 }
