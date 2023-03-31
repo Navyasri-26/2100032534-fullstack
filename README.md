@@ -1,5 +1,18 @@
-# Solutions for part 9 exercises
+# Anecdotes
 
-This part is all about TypeScript: and open-source typed superset of JavaScript developed by Microsoft that compiles to plain JavaScript.
+The world of software engineering is filled with anecdotes that distill timeless truths from our field into short one-liners.
 
-In this part we will be using the tools previously introduced to build end-to-end features to an existing ecosystem with linters predefined and an existing codebase writing TypeScript.
+This application allows the user to vote between multiple anecdotes and then displays the most popular one.
+
+## Start the application
+
+To start an application, do the following :
+
+```bash
+# Install dependancies
+$ yarn install
+# Start the application
+$ yarn start
+```
+
+You can then access the app on : [http://localhost:3000/](http://localhost:3000/)
